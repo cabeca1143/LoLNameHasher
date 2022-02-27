@@ -66,6 +66,8 @@ namespace Hasher
         {
             Console.Write("\nInsert the path for the file to be read: ");
             string path = Console.ReadLine();
+            string fileName = Path.GetFileNameWithoutExtension(path);
+            string outputPath = $"{Path.GetDirectoryName(path)}\\";
             string[] pathFileStrings = File.ReadAllLines(path);
 
             var JsonSettings = new JsonSerializerOptions { WriteIndented = true };
@@ -78,8 +80,8 @@ namespace Hasher
 
             var output = JsonSerializer.Serialize(stringsToSerialize, JsonSettings);
 
-            File.WriteAllText($"{path}Hashed.json", output);
-            Console.WriteLine($"Done! Your file was generatied in: {path}Hashed.json\n");
+            File.WriteAllText($"{outputPath + fileName}Hashed.json", output);
+            Console.WriteLine($"Done! Your file was generatied in: {outputPath + fileName}Hashed.json\n");
         }
 
         static uint Hash(string str)
