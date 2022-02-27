@@ -24,3 +24,8 @@ obj/Hasher.csproj.nuget.g.props
 obj/Hasher.csproj.nuget.g.targets
 obj/project.assets.json
 obj/project.nuget.cache
+.vs/Hasher/DesignTimeBuild/.dtbcache.v2
+.vs/Hasher/v17/.futdcache.v1
+bin/Debug/net5.0/DesktopSpelNames.txtHashed.json
+bin/Debug/net5.0/Hasher.runtimeconfig.dev.json
+obj/Debug/net5.0/Hasher.csproj.BuildWithSkipAnalyzers
