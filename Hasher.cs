@@ -7,13 +7,15 @@ namespace Hasher
 {
     internal class Hasher
     {
+        static JsonSerializerOptions JsonSettings = new JsonSerializerOptions { WriteIndented = true };
+
         static void Main(string[] args)
         {
             bool isInputValid = false;
 
             while (!isInputValid)
             {
-                Console.WriteLine("Would you like to Hash a single string or a Text File?\n1 - Single String\n2 - Text File");
+                Console.WriteLine("Would you like to Hash a single string, a text file, or an entire directory?\n1 - Single String\n2 - Text File\n3 - Directory");
 
                 string optionInput = Console.ReadLine();
                 int option = 0;
@@ -36,6 +38,10 @@ namespace Hasher
                         break;
                     case 2:
                         HashFile();
+                        isInputValid = true;
+                        break;
+                    case 3:
+                        HashDirectory();
                         isInputValid = true;
                         break;
                     default:
@@ -64,13 +70,13 @@ namespace Hasher
 
         static void HashFile()
         {
-            Console.Write("\nInsert the path for the file to be read: ");
+            Console.Write("\nInsert the path of the file to be read: ");
+
             string path = Console.ReadLine();
             string fileName = Path.GetFileNameWithoutExtension(path);
             string outputPath = $"{Path.GetDirectoryName(path)}\\";
             string[] pathFileStrings = File.ReadAllLines(path);
 
-            var JsonSettings = new JsonSerializerOptions { WriteIndented = true };
             List<HashObject> stringsToSerialize = new List<HashObject>();
 
             foreach (string fileString in pathFileStrings)
@@ -81,7 +87,28 @@ namespace Hasher
             var output = JsonSerializer.Serialize(stringsToSerialize, JsonSettings);
 
             File.WriteAllText($"{outputPath + fileName}Hashed.json", output);
-            Console.WriteLine($"Done! Your file was generatied in: {outputPath + fileName}Hashed.json\n");
+            Console.WriteLine($"Done! Path to the generated file: {outputPath + fileName}Hashed.json\n");
+        }
+
+        static void HashDirectory()
+        {
+            Console.Write("\nInsert the path of the directory to be read: ");
+            string path = Console.ReadLine();
+
+            //Directory.GetFiles(path, "*.lua");
+            string[] files = Directory.GetFiles(path);
+            List<HashObject> stringsToSerialize = new List<HashObject>();
+
+            foreach (string file in files)
+            {
+                var name = Path.GetFileName(file.Substring(0, file.IndexOf(".")));
+                stringsToSerialize.Add(new HashObject(name, Hash(name)));
+            }
+
+            var output = JsonSerializer.Serialize(stringsToSerialize, JsonSettings);
+
+            File.WriteAllText($"{path}Hashed.json", output);
+            Console.WriteLine($"Done! Path to the generated file: {path}Hashed.json\n");
         }
 
         static uint Hash(string str)
