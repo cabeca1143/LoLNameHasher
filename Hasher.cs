@@ -95,17 +95,75 @@ namespace Hasher
             Console.Write("\nInsert the path of the directory to be read: ");
             string path = Console.ReadLine();
 
-            //Directory.GetFiles(path, "*.lua");
+            string directions = "\nSpecify the method of hashing to use:\n1 - Filename Only\n2 - Character Packages\n";
+            Console.Write(directions);
+            string optionInput = Console.ReadLine();
+            int option = StringIntConvert(optionInput);
+
+            while(option != 1 && option != 2)
+            {
+                PrintError("Invalid Input, please use a number from the options [1, 2].\n");
+                Console.Write(directions);
+                option = StringIntConvert(Console.ReadLine());
+            }
+
             string[] files = Directory.GetFiles(path);
             List<HashObject> stringsToSerialize = new List<HashObject>();
 
-            foreach (string file in files)
+            List<string> tempNames = new List<string>();
+
+            if (option == 1)
             {
-                var name = Path.GetFileName(file.Substring(0, file.IndexOf(".")));
-                stringsToSerialize.Add(new HashObject(name, Hash(name)));
+                directions = "\nSpecify any extension filters:\n";
+                Console.Write(directions);
+                string filter = Console.ReadLine();
+
+                while (filter != string.Empty && !filter.Contains("."))
+                {
+                    PrintError("Invalid Input, extension filters must start with a period (.)\n");
+                    Console.Write(directions);
+                    filter = Console.ReadLine();
+                }
+
+                foreach (string file in files)
+                {
+                    if (!file.Contains(filter))
+                    {
+                        continue;
+                    }
+
+                    string nameCutoff = ".";
+
+                    // Particles need to keep .troy part of their file name.
+                    if (filter == ".troybin")
+                    {
+                        nameCutoff = "bin";
+                    }
+
+                    string name = Path.GetFileName(file.Substring(0, file.IndexOf(nameCutoff)));
+                    if (!tempNames.Contains(name))
+                    {
+                        tempNames.Add(name);
+                        stringsToSerialize.Add(new HashObject(name, Hash(name)));
+                    }
+                }
+            }
+            else
+            {
+                files = Directory.GetDirectories(path);
+
+                foreach (string file in files)
+                {
+                    string name = Path.GetFileName(file);
+                    if (!tempNames.Contains(name))
+                    {
+                        tempNames.Add(name);
+                        stringsToSerialize.Add(new HashObject(name, HashNorm("[Character]" + name + "00")));
+                    }
+                }
             }
 
-            var output = JsonSerializer.Serialize(stringsToSerialize, JsonSettings);
+            string output = JsonSerializer.Serialize(stringsToSerialize, JsonSettings);
 
             File.WriteAllText($"{path}Hashed.json", output);
             Console.WriteLine($"Done! Path to the generated file: {path}Hashed.json\n");
@@ -124,6 +182,32 @@ namespace Hasher
                 }
             }
             return hash;
+        }
+
+        static uint HashNorm(string str)
+        {
+            uint hash = 0;
+
+            for (var i = 0; i < str.Length; i++)
+            {
+                hash = char.ToLower(str[i]) + 65599 * hash;
+            }
+
+            return hash;
+        }
+
+        static int StringIntConvert(string input)
+        {
+            int result = -1;
+
+            try
+            {
+                return Convert.ToInt32(input);
+            }
+            catch
+            {
+                return result;
+            }
         }
     }
 
