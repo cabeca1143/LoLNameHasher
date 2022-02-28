@@ -125,13 +125,10 @@ namespace Hasher
                     filter = Console.ReadLine();
                 }
 
+                files = Directory.GetFiles(path, "*" + filter, SearchOption.AllDirectories);
+
                 foreach (string file in files)
                 {
-                    if (!file.Contains(filter))
-                    {
-                        continue;
-                    }
-
                     string nameCutoff = ".";
 
                     // Particles need to keep .troy part of their file name.
