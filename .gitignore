@@ -29,3 +29,4 @@ obj/project.nuget.cache
 bin/Debug/net5.0/DesktopSpelNames.txtHashed.json
 bin/Debug/net5.0/Hasher.runtimeconfig.dev.json
 obj/Debug/net5.0/Hasher.csproj.BuildWithSkipAnalyzers
+/.vs/Hasher/v16/.suo
